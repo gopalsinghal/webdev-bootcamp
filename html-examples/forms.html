@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+</head>
+<body>
+<form method="GET" action="#">
+    <input type="checkbox" name="x" value="first">
+    <input type="checkbox" name="y" value="second">
+    <input type="checkbox" name="z" value="third">
+    <input type="color">
+    <input type="datetime-local">
+    <input type="email">
+    <input type="submit">
+    <select multiple="">
+
+    </select>
+</form>
+<button>A <b>bold</b><br>BUTTON</button>
+<br>
+<form>
+  <input maxlength="10">
+  <input type="number">
+  <input type="number" value="20" min="10" max="21">
+  <br>
+  <input type="email" placeholder="Enter Email Address">
+  <input type="color" value="#444444">
+  <input type="date">
+  <input type="datetime">
+  <br>
+  <input type="file">
+  <br>
+  <input type="button" value="A BUTTON">
+  <br>
+  <input type="submit" value="SUBMIT">
+  <input type="reset">
+  <br>
+  <input id="apple" type="checkbox">
+  <label for="apple">Apple</label>
+  <input id="google" type="checkbox">
+  <label for="google">Google</label>
+  <input id="facebook" type="checkbox">
+  <label for="facebook">Facebook</label>
+  <br>
+  <input type="radio" name="a">
+  <input type="radio" name="a">
+  <input type="radio" name="b">
+  <br>
+  <select>
+    <option value="a">A</option>
+    <option selected value="b">B</option>
+    <option value="c">C</option>
+</select>
+</form>
+
+<h2>Search</h2>
+<form action="https://google.com/search">
+  <input name="q">
+  <input name="q">
+  <select name="month">
+    <option selected disabled value="null"></option>
+    <option value="1">Jan</option>
+    <option >Feb</option> <!-- Takes innerText if no value -->
+    <option value="3">March</option>
+  </select>
+  <input type="submit" value="Search">
+  <input  formaction="https://bing.com/search" 
+          type="submit" 
+          value="Search Bing">
+</form>
+
+<p contenteditable="true"> This is some text </p>
+
+<p draggable="true">Somre more text</p>
+
+<textarea cols="50" rows="5" ></textarea>
+
+<form title="Fruits" target="_blank" action="index.html">
+    <input type="text" required>
+    <section>
+        <input id="apple"  type="checkbox"> Apples
+        <input id="orange" type="checkbox"> Oranges
+        <input id="guava" type="checkbox"> Guava
+    </section>
+    <section>
+        <input name="fruit" value="apples" type="radio"> Apples
+        <input name="fruit" value="Oranges" type="radio"> Oranges
+        <input name="fruit" value="Guava" type="radio"> Guava
+    </section>
+    <section>
+        <input type="color">
+    </section>
+    <section>
+        <input type="date">
+    </section>
+    <section>
+        <input type="file">
+    </section>
+    <section>
+        <input type="email" required>
+        <input type="password">
+    </section>
+   <input type="submit">
+</form>
+
+</body>
+</html>

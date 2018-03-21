@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation</title>
+</head>
+<body>
+<header>
+    <nav>
+        <ul style="list-style: none">
+            <li style="display: inline"><a target="_blank" href="https://www.google.co.in/">Go to google</a></li>
+            <li style="display: inline"><a style="text-decoration: none" href="#whoweare">Who We Are</a></li>
+            <li style="display: inline"><a style="text-decoration: none" href="#whatwedo">What We Do</a></li>
+            <li style="display: inline"><a style="text-decoration: none" href="#contactus">Contact Us</a></li>
+        </ul>
+    </nav>
+</header>
+<section>
+    <div id="whoweare">
+        <h3>Who We Are?</h3>
+        <p>
+            An effective continuous deployment system makes your engineering team more efficient by giving them automatic, quick feedback on their changes, and by providing a platform on which your whole organization can automate frequent operations, like merges and deploys. Let the computer do the repetitive work, and let your developers ship product.
+
+            Unfamiliar with Solano Labs and their testing frameworks? Check them out now for free now.
+
+            Note: these recommendations assume that you’re writing tests. Read these fine articles to learn more about why automated testing is so useful, and how it can help your business.
+
+            To improve and perfect your CI, you need to overcome 3 major challenges:
+
+            No Standalone Fresh Checkout
+            Unreliable Tests
+            Obscure Build Results
+            Fresh-Checkout Isn’t Standalone
+
+            The single biggest hurdle to a smooth CI build is ensuring that your application’s tests can be run from a fresh SCM checkout (e.g. a git clone). This means that all of your app’s dependencies are either included in the checkout, or they’re specified and can be pulled in by a script in the checkout. There are a number of ways this can help productivity. The first is that it gives your new developers a simple way to bring up the app into a known-good state.
+
+            Now, think of your CI server as a new developer who knows nothing about your app and needs to be taught everything by a script. Every build in your CI server should start from a known-good state, and each build should be independent from the last. This tabula rasa condition is critical to trustworthy and reliable build results – a cornerstone of CI as we’ll discuss in the next section.
+
+            Most simple applications start out with standalone checkouts, but as they gain features and integrations, it’s easy to lose this property if you’re not in the habit of maintaining it.
+
+            Here’s a test for how standalone your app is on first-checkout (the examples assume a Rails app that’s in a git repo, but they apply for other frameworks and source control tools):
+
+            Go into a new directory and checkout your app: $ mkdir -p ~/tmp $ cd ~/tmp $ git clone git@server.com:repo.git repo_from_scratch
+            ????
+            Run your test suite (you have a test suite, right?) `$ rake test`
+            What did you have to do for step 2? Was it a single shell command? Did it work the first time? Or did you need to have your co-worker shout instructions at you from across the office?
+
+            Once you express this setup step as a single command (bash script, rake task, ant target, etc.), you save your new coworkers time, and you ensure that every development environment and test runs against a predictable base.
+
+            Unreliable Tests
+
+            Now that your app sets up with a single command, you’ve built a foundation for effective CI. The next challenge is to ensure that your test results are repeatable and reliable. Intermittent or “expected” failures that persist for too long are pernicious. Once the habit of treating failures as intermittent takes hold, legitimate errors often get ignored.
+
+            Try the following exercises:
+
+            Run your test suite. Does it pass?
+            Run your test suite again. Does it produce the same result as the first time?
+            Reset your test databases and caches -- drop them, and recreate from scratch using the scripted setup procedure you now have. Run your test suite again. Does it produce the same results?
+            If your test framework supports randomizing test order, try running in a different order, or with a different seed.
+            Run a few of your tests by themselves. Do they produce the same results as when you ran the whole test suite?
+            ADVANCED: Create a Virtual Machine (using your favorite tool or cloud provider) that is significantly slower than your development box (for example, a virtualbox with a single CPU and a small RAM, or an m1.small in Amazon EC2). Run your test suite on this crippled hardware. Does it produce the same results as on your dev box?
+            Intermittent test failures are almost always due to test order or timing dependencies. Here are a few specific antipatterns:
+
+            Leaky database cleanup. Do you reset the database between tests? Is it possible for the reset to not be triggered, or for it to overzealously destroy seed data?
+            Editing globals. Directly editing a global variable (like, say, the one that holds your app's configuration) in one test will impact the following test run in the same process. Most dependency-injection test frameworks allow stubbing at various scopes. Most allow stubbing globals. Beware, though: stubbing frameworks that are bulletproof for instance-level stubbing sometimes have subtle bugs regarding clearing stubs on globals.
+            Hard-coded timeouts or other limits (file or screen sizes, etc.). The time it takes to complete an operation can change on different hardware, or over time as the implementation changes.
+            Time- or date-specific test cases. Do your tests fail on the first of every month for some spooky reason?
+            Other leaky global state. The most common case here is when one test imports a library that a later test uses, or defines a symbol, or writes to the filesystem (e.g., look for hardcoded references to `/tmp` or `~/tmp`).
+            Obscure Build Results
+
+            Once you’ve produced a reliable test suite, the next challenge is to get results quickly, take appropriate action on them, and distribute information to the people who matter.
+
+            Timely results – ideally delivered sooner than 15-20 minutes after a commit – are essential to maintaining focus. Digging through a failed build from a 4-hour old commit requires mentally paging back in old information, and it may be a complete waste of time, as the commit have been superseded by a later one. If you’re waiting longer than an hour for builds, consider a commercial or open source parallel test runner, or the deeper undertaking of refactoring your tests to be less database/browser intensive.
+
+            Most popular test frameworks have rich reporting functionality to allow you to get as much or as little output as you want. Unfortunately, most test frameworks are optimized for output to an interactive user running them from the CLI, and that’s not often suited to what you want from a CI build. The situation is complicated further when parallel test runners are introduced to test frameworks that don’t support them natively – each parallel run will generate its own separate log file. Even concatenating these logs together at the end of the build makes it easier to grep for failures.
+
+            Once your build completes, what happens next is probably the most important piece of the puzzle. At the very minimum, an email or IM notification should be sent to the team whose commits ended up in the build. More complex logic, like notifying users only on state changes, or only on failures, can help immensely by cutting down on notification volume, and making build events that much more noticeable. Beyond notifications, for a full continuous deployment setup, the code from the build and any artifacts should be pushed to a downstream server and made ready for review. Make sure that the results of deploy actions get included in notifications!
+
+            Wrapping Up
+
+            Automated testing makes development agile, and Continuous Integration takes the human error out of “manually run” automated testing. But getting a continuous integration environment working smoothly for your organization can be daunting, whether you hacked it all together, bought some off the shelf software, or are using a SaaS like Tddium. Approaching the problem methodically by automating your app setup and hardening tests will make your continuous integration server more trustworthy and reliable. Focused email notifications help keep the team coordinated and responsive to results. Having your CI solution scale to meet your teams needs is also crucial to the requirements of the system.
+
+            It’s easy for a small organization with a few developers to set up a CI server that works simply and well. But developers then have to maintain servers and to do system administration. This is overhead and distraction from building core product.
+
+            This overhead grows exponentially as the business grows and the CI server itself needs more advanced technology – like real-time UIs and intelligent notifications, process isolation, build and test parallelism, dynamic work scheduling, audit and governance controls, third-party API integrations, and automatic hardware scaling in public and private clouds.
+
+            Building your own CI server means you have complete control, but it also means that you and your busy team are on the hook for administration and improvements, and scaling. If you’d like to learn more about fast, easy-to-use CI servers, come talk to us…we’re pros!
+
+            If you are an Engine Yard customer, follow these steps to access Solano Labs’ Continuous Integration Service:
+
+            Go to https://cloud.engineyard.com/addons (login required) or navigate to “Add-ons” in Engine Yard Cloud
+
+            Click on the Solano Labs listing
+
+            Sign up and follow the instructions for “Activate”, “Update Code” and “Deploy”
+        </p>
+    </div>
+    <div id="whatwedo">
+        <h3>What We Do?</h3>
+        <p>
+            Challenge #1 Massive, monolithic applications
+            A key aspect of CD is making small, incremental changes to an application, to enable fast feedback and faster fixes. Large, tightly-coupled applications with multiple components that need to be compiled, tested and deployed together are tough to update incrementally, leading to long development, test and deploy cycles. Quality control and root cause analysis is harder too, as many changes are being implemented at the same time. Also, as each release procedure needs to differ slightly, it is hard to create a standardized delivery pipeline and benefit from the resulting increase in reliability.
+
+            When faced with this challenge in the past, we have tried to initiate a workstream to incrementally break out components of the application into separate modules. These can then be built and deployed independently, allowing for faster feedback cycles with smaller changesets.
+
+            Challenge #2 Minimal automation
+            We shouldn’t be automating for the sake of automation: manual activities aren’t “banned” from a CD pipeline on principle. However, a high percentage of manual steps will likely slow down your delivery pipeline and increase the chance of errors, thus preventing you from being able to scale your CD implementation. In order to meet your throughput and consistency goals, it is usually required to either automate a bulk of the manual steps in your delivery process, or replace them with suitable alternatives.
+
+            It is important to treat this automation effort as seriously as any other development effort, applying appropriate design, coding and testing practices in order to avoid ending up with an impossible to maintain “ball of mud”. The Infrastructure as Code movement has made significant steps in this area, for instance promoting test-driven development of provisioning and deployment automation and providing supporting tooling.
+
+            Challenge #3 Limited environments
+            A limited pool of shared test environments increases the risk of bottlenecks during your CD implementation. You would need to “block” or “reserve” an environment to avoid two pipelines running side-by-side from attempting to deploy and test in the same environment. Measures also need to be taken to prevent one pipeline blocking an environment for too long, or for one pipeline to always just beat the other to the required environment, leading to “starvation” for the other project. Furthermore, an interesting data point from the aforementioned survey is that misconfigured or “broken” environments, that have been unexpectedly modified by previous teams or test runs, are one of the leading causes of deployment failures.
+
+            If you plan to be running delivery pipelines at scale, a dynamic pool of available, “clean” target environments is required. Private, public or hybrid cloud platforms, coupled with provisioning and configuration management tools, allow you to grow and shrink this pool automatically and on-demand.
+
+            Challenge #4 Enterprise” release management
+            As soon as we approach QA or production in most enterprise environments, an increasing number of release management requirements must be met -- creation of a change ticket, placing the change on the agenda of the next Change Board meeting, receiving Change Board approval, confirming deployment windows etc. etc.
+
+            How do you integrate such requirements into your delivery pipelines? Some possibilities:
+
+            Simply cap all delivery pipelines at the test stage, before running into any release management conditions. The goal is typically to take CD further than just test environments, though.
+            Integrate the various release management steps into the pipeline, e.g. by manually and, eventually, automatically creating and scheduling a change ticket, or by automatically setting a start time on the pipeline’s deployment phase from the change management system.
+            Revisit the need for certain change management conditions. The origin of such practices is typically to ensure that only changes of an approved level of quality and stability make it to production – precisely the level of quality and stability that prior stages of a delivery pipeline are intended to verify.
+            Challenge #5 Managing multiple “custom” pipelines.
+            In a large organization with a diverse service portfolio, spanning different technology platforms, departments, customers, and teams there will be many pipelines to manage as you scale your CD implementation. If every pipeline ends at a different stage in the delivery process, it would be difficult to compare metrics such as cycle time, throughput or percentage of successful executions
+
+            A large set of pipelines is easier to manage if each one is based on a standard template. Standardized pipelines also allow for more meaningful comparative reporting as well as providing useful feedback that can be applied to other pipelines. Templates can be as simple as a shared Wiki page but can also supported by CD tools such as Go. The number of templates you should start with depends on the variation across your service portfolio; one per technology stack is often a useful starting point. Over time, you will hopefully be able to consolidate towards just a handful of pipeline types.
+
+            Challenge #6 Ownership and security
+            Automated delivery pipelines span multiple teams of the IT organization, something that is especially highlighted when pipeline stages fail and it’s hard to find who needs to fix it. Every pipeline stage needs to have an owner(s) tasked not only with fixing problems and getting the delivery stream running again, but also with contributing to feedback-driven improvement of the pipeline as a whole.
+
+            Since visibility into the state of the entire pipeline is important for all stakeholders, it is important that any orchestration tool considered offers a suitable security model. For example, developers will probably need to examine the results of a functional test phase to help identify the cause of test failures. However, they should not be able to disable or modify the configuration of the functional testing step.
+
+            In Summary
+            Analyzing which of the common challenges to putting CD into practice apply in your situation should be a first preparatory step in your implementation. Gain an accurate picture of your current baseline, structure your implementation in measurable phases, and then work on dealing with these challenges to clear the way for your first delivery pipelines with defined roles and responsibilities for each phase. Mitigating any challenges that you identify early in the project cycle will help your implementation progress smoothly and help you address future challenges. Your CD implementation will then be on the way to providing faster releases, more reliable feature delivery and steady improvement driven by quicker feedback and better insight.
+        </p>
+    </div>
+    <div id="contactus">
+        <h3>Contact Us</h3>
+        <p>
+            Challenge #1 Massive, monolithic applications
+            A key aspect of CD is making small, incremental changes to an application, to enable fast feedback and faster fixes. Large, tightly-coupled applications with multiple components that need to be compiled, tested and deployed together are tough to update incrementally, leading to long development, test and deploy cycles. Quality control and root cause analysis is harder too, as many changes are being implemented at the same time. Also, as each release procedure needs to differ slightly, it is hard to create a standardized delivery pipeline and benefit from the resulting increase in reliability.
+
+            When faced with this challenge in the past, we have tried to initiate a workstream to incrementally break out components of the application into separate modules. These can then be built and deployed independently, allowing for faster feedback cycles with smaller changesets.
+
+            Challenge #2 Minimal automation
+            We shouldn’t be automating for the sake of automation: manual activities aren’t “banned” from a CD pipeline on principle. However, a high percentage of manual steps will likely slow down your delivery pipeline and increase the chance of errors, thus preventing you from being able to scale your CD implementation. In order to meet your throughput and consistency goals, it is usually required to either automate a bulk of the manual steps in your delivery process, or replace them with suitable alternatives.
+
+            It is important to treat this automation effort as seriously as any other development effort, applying appropriate design, coding and testing practices in order to avoid ending up with an impossible to maintain “ball of mud”. The Infrastructure as Code movement has made significant steps in this area, for instance promoting test-driven development of provisioning and deployment automation and providing supporting tooling.
+
+            Challenge #3 Limited environments
+            A limited pool of shared test environments increases the risk of bottlenecks during your CD implementation. You would need to “block” or “reserve” an environment to avoid two pipelines running side-by-side from attempting to deploy and test in the same environment. Measures also need to be taken to prevent one pipeline blocking an environment for too long, or for one pipeline to always just beat the other to the required environment, leading to “starvation” for the other project. Furthermore, an interesting data point from the aforementioned survey is that misconfigured or “broken” environments, that have been unexpectedly modified by previous teams or test runs, are one of the leading causes of deployment failures.
+
+            If you plan to be running delivery pipelines at scale, a dynamic pool of available, “clean” target environments is required. Private, public or hybrid cloud platforms, coupled with provisioning and configuration management tools, allow you to grow and shrink this pool automatically and on-demand.
+
+            Challenge #4 Enterprise” release management
+            As soon as we approach QA or production in most enterprise environments, an increasing number of release management requirements must be met -- creation of a change ticket, placing the change on the agenda of the next Change Board meeting, receiving Change Board approval, confirming deployment windows etc. etc.
+
+            How do you integrate such requirements into your delivery pipelines? Some possibilities:
+
+            Simply cap all delivery pipelines at the test stage, before running into any release management conditions. The goal is typically to take CD further than just test environments, though.
+            Integrate the various release management steps into the pipeline, e.g. by manually and, eventually, automatically creating and scheduling a change ticket, or by automatically setting a start time on the pipeline’s deployment phase from the change management system.
+            Revisit the need for certain change management conditions. The origin of such practices is typically to ensure that only changes of an approved level of quality and stability make it to production – precisely the level of quality and stability that prior stages of a delivery pipeline are intended to verify.
+            Challenge #5 Managing multiple “custom” pipelines.
+            In a large organization with a diverse service portfolio, spanning different technology platforms, departments, customers, and teams there will be many pipelines to manage as you scale your CD implementation. If every pipeline ends at a different stage in the delivery process, it would be difficult to compare metrics such as cycle time, throughput or percentage of successful executions
+
+            A large set of pipelines is easier to manage if each one is based on a standard template. Standardized pipelines also allow for more meaningful comparative reporting as well as providing useful feedback that can be applied to other pipelines. Templates can be as simple as a shared Wiki page but can also supported by CD tools such as Go. The number of templates you should start with depends on the variation across your service portfolio; one per technology stack is often a useful starting point. Over time, you will hopefully be able to consolidate towards just a handful of pipeline types.
+
+            Challenge #6 Ownership and security
+            Automated delivery pipelines span multiple teams of the IT organization, something that is especially highlighted when pipeline stages fail and it’s hard to find who needs to fix it. Every pipeline stage needs to have an owner(s) tasked not only with fixing problems and getting the delivery stream running again, but also with contributing to feedback-driven improvement of the pipeline as a whole.
+
+            Since visibility into the state of the entire pipeline is important for all stakeholders, it is important that any orchestration tool considered offers a suitable security model. For example, developers will probably need to examine the results of a functional test phase to help identify the cause of test failures. However, they should not be able to disable or modify the configuration of the functional testing step.
+
+            In Summary
+            Analyzing which of the common challenges to putting CD into practice apply in your situation should be a first preparatory step in your implementation. Gain an accurate picture of your current baseline, structure your implementation in measurable phases, and then work on dealing with these challenges to clear the way for your first delivery pipelines with defined roles and responsibilities for each phase. Mitigating any challenges that you identify early in the project cycle will help your implementation progress smoothly and help you address future challenges. Your CD implementation will then be on the way to providing faster releases, more reliable feature delivery and steady improvement driven by quicker feedback and better insight.
+        </p>
+        <address>
+
+        </address>
+    </div>
+</section>
+</body>
+</html>
